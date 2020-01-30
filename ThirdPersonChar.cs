@@ -36,24 +36,38 @@ public class ThirdPersonChar : MonoBehaviour
 	
 	//Player Components
     private CharacterController characterController;
-	public Animator playerAnimator;
+	private Animator playerAnimator;
     private Rigidbody playerRB;
+	private Vector3 playerMovement; 
+	public float currentJumpSpeed;
+	private int setJumpSpeed;
+	private int gravity;
+
+	
 	
 	void Start()
 	{
 		speed = normalSpeed;//At start, set the speed to normal speed not sprinting speed(when incremened speed is added this will get depricated probably)
 		Cursor.visible = false;//set the cursor to invisible
         Cursor.lockState = CursorLockMode.Locked;//lock the cursorto the center of the screen
+		gravity = -2;
+		setJumpSpeed = 25;
+		currentJumpSpeed = 0;
+		
 	}
     void Update()
 
     {
-		characterController = GetComponent<CharacterController>();//Character controller attached to the player empty
 		playerRB = GetComponent<Rigidbody>();//RigidBody attached to the player empty
+		characterController = GetComponent<CharacterController>();//Character controller attached to the player empty
+		playerAnimator = GetComponent<Animator>();
 		
+		//Jump();
         PlayerMovement();//Moves Player 
 		PlayerLook();//Rotates player/camera
 		
+		Debug.Log(characterController.isGrounded);
+	
     }
 
 
@@ -68,13 +82,15 @@ public class ThirdPersonChar : MonoBehaviour
         float ver = (Input.GetAxis("Vertical")); // Move forward or back
 		
 		
+	
 		//Player movement consists of two vectors, vertical and horizontal.
-        Vector3 playerMovement = (gameObject.transform.forward * Input.GetAxis("Vertical")) + (Input.GetAxis("Horizontal") * gameObject.transform.right);
+		
+		playerMovement = ((gameObject.transform.forward * Input.GetAxis("Vertical")) + (Input.GetAxis("Horizontal") * gameObject.transform.right)) * speed + (gameObject.transform.up * -10);
 		
 		
 		
 		
-		characterController.Move(playerMovement * speed * Time.deltaTime);
+		characterController.Move(playerMovement * Time.deltaTime);
 		
 		
 		
@@ -96,11 +112,6 @@ public class ThirdPersonChar : MonoBehaviour
 		
 		
 		//Jumping
-		//if(Input.GetKeyDown(KeyCode.Space))
-		//{
-			playerRB.AddForce(jumpForce * transform.up,ForceMode.Impulse);
-			
-		//}
 		
 		
 		
@@ -134,24 +145,53 @@ public class ThirdPersonChar : MonoBehaviour
 		switch(state)
 		{
 			case 0: //Idle
-				playerAnimator.SetInteger("PlayerState", 0);
+				playerAnimator.SetInteger("PlayerAnimationState", 0);
 				break;
 			
 			case 1: //Running
-				playerAnimator.SetInteger("PlayerState", 1);
+				playerAnimator.SetInteger("PlayerAnimationState", 1);
 				break;
 			
 			case 2: //Tag
-				playerAnimator.SetInteger("PlayerState", 2);
+				playerAnimator.SetInteger("PlayerAnimationState", 2);
 				break;
 			
 			default:
-				playerAnimator.SetInteger("PlayerState",0);
+				playerAnimator.SetInteger("PlayerAnimationState",0);
 				break;
 				
 				
 		}
-		
+	}
+		/*float Jump()
+		{
+			
+				
+			}
+			if(Input.GetKeyDown(KeyCode.Space) && characterController.isGrounded == true)
+			{
+				isJumping = true
+				currentJumpSpeed = 0
+			}
+			if(isJumping = true)
+			{
+				currentJumpSpeed++
+			}
+			if(currentJumpSpeed > 9)
+			{
+				isJumping = false
+			}
+			if(currentJumpSpeed < -9.81)
+			{
+				currentJumpSpeed = -9.81f;
+			}
+			else
+			{	
+				currentJumpSpeed = currentJumpSpeed - 2.5f;
+			}
+			return currentJumpSpeed; 
+			
+		}*/
 		
 		
 	}
@@ -159,4 +199,3 @@ public class ThirdPersonChar : MonoBehaviour
 
 
 
-}
